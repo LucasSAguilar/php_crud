@@ -5,22 +5,33 @@ require_once ("./models/Produto.php");
 $pdo = new PDO("sqlite:" . __DIR__ . "/db.sqlite");
 $pdo->exec("CREATE TABLE IF NOT EXISTS produtos (id INTEGER PRIMARY KEY, nome TEXT, valor NUMBER, disponivel BOOLEAN)");
 
-function postData($pdo)
+function postData(PDO $pdo)
 {
-    $produtoUm = new Produto(2, "Laranja", 8.00, true);
-    $sqlQuery = "INSERT INTO produtos (id, nome, valor, disponivel) VALUES ('{$produtoUm->getId()}','{$produtoUm->getNome()}', '{$produtoUm->getValor()}', '{$produtoUm->getdisponivel()}')";
-    $responsePost = $pdo->exec($sqlQuery);
+    $produtoUm = new Produto(3, "Pera", 14.00, false);
+    $sqlQuery = "INSERT INTO produtos (id, nome, valor, disponivel) VALUES (?, ?, ?, ?)";
+    // Também pode ser feito nomeando os placeholders: 
+    // $sqlQuery = "INSERT INTO produtos (id, nome, valor, disponivel) VALUES (:id, :nome, :valor, :disponivel)";
 
-    if ($responsePost > 0) {
+    // $statement->bindValue(":id", $produtoUm->getId(), PDO::PARAM_INT);
+
+    $statement = $pdo->prepare($sqlQuery);
+
+
+    $statement->bindValue(1, $produtoUm->getId(), PDO::PARAM_INT);
+    $statement->bindValue(2, $produtoUm->getNome(), PDO::PARAM_STR);
+    $statement->bindValue(3, $produtoUm->getValor(), PDO::PARAM_INT);
+    $statement->bindValue(4, $produtoUm->getDisponivel(), PDO::PARAM_BOOL);
+
+    if ($statement->execute()) {
         echo "Enviado com sucesso";
     }
 }
 
-function getAllData($pdo)
+function getAllData(PDO $pdo)
 {
     $sqlQuery = "SELECT * FROM produtos";
-    $responseGet = $pdo->query($sqlQuery);
-    $productDatas = $responseGet->fetchAll(PDO::FETCH_ASSOC);
+    $statment = $pdo->query($sqlQuery);
+    $productDatas = $statment->fetchAll(PDO::FETCH_ASSOC);
     $productList = [];
 
     foreach ($productDatas as $produto) {
@@ -32,7 +43,7 @@ function getAllData($pdo)
 
 function getOneData(PDO $pdo)
 {
-    $sqlQuery = "SELECT * FROM produtos WHERE id = 1";
+    $sqlQuery = "SELECT * FROM produtos WHERE id = 3";
     $statement = $pdo->query($sqlQuery);
     $productDatas = $statement->fetch(PDO::FETCH_ASSOC);
 
@@ -44,5 +55,15 @@ function getOneData(PDO $pdo)
 
 }
 
+function deleteOneData(PDO $pdo, int $id)
+{
+    $statement = $pdo->prepare("DELETE FROM produtos WHERE id = :id");
+    $statement->bindValue(":id", $id, PDO::PARAM_INT);
+    if ($statement->execute()) {
+        echo "Produto deletado com sucesso!";
+    }
+}
 
-getOneData($pdo);
+getAllData($pdo);
+deleteOneData($pdo, 2);
+getAllData($pdo);
