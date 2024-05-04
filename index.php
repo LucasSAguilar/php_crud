@@ -16,9 +16,7 @@ function postData($pdo)
     }
 }
 
-
-
-function getData($pdo)
+function getAllData($pdo)
 {
     $sqlQuery = "SELECT * FROM produtos";
     $responseGet = $pdo->query($sqlQuery);
@@ -31,4 +29,20 @@ function getData($pdo)
 
     echo var_dump($productList);
 }
-getData($pdo);
+
+function getOneData(PDO $pdo)
+{
+    $sqlQuery = "SELECT * FROM produtos WHERE id = 1";
+    $statement = $pdo->query($sqlQuery);
+    $productDatas = $statement->fetch(PDO::FETCH_ASSOC);
+
+    if ($productDatas > 0) {
+        $produtoEncontrado = new Produto($productDatas["id"], $productDatas["nome"], $productDatas["valor"], $productDatas["disponivel"]);
+        echo var_dump($produtoEncontrado);
+        echo "Seu produto de id " . $produtoEncontrado->getId() . " é o " . $produtoEncontrado->getNome();
+    }
+
+}
+
+
+getOneData($pdo);
