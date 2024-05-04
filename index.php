@@ -7,8 +7,8 @@ $pdo->exec("CREATE TABLE IF NOT EXISTS produtos (id INTEGER PRIMARY KEY, nome TE
 
 function postData($pdo)
 {
-    $produtoUm = new Produto("Peneira", 10.00, true);
-    $sqlQuery = "INSERT INTO produtos (nome, valor, disponivel) VALUES ('{$produtoUm->getNome()}', '{$produtoUm->getValor()}', '{$produtoUm->getdisponivel()}')";
+    $produtoUm = new Produto(2, "Laranja", 8.00, true);
+    $sqlQuery = "INSERT INTO produtos (id, nome, valor, disponivel) VALUES ('{$produtoUm->getId()}','{$produtoUm->getNome()}', '{$produtoUm->getValor()}', '{$produtoUm->getdisponivel()}')";
     $responsePost = $pdo->exec($sqlQuery);
 
     if ($responsePost > 0) {
@@ -16,15 +16,19 @@ function postData($pdo)
     }
 }
 
+
+
 function getData($pdo)
 {
     $sqlQuery = "SELECT * FROM produtos";
     $responseGet = $pdo->query($sqlQuery);
-    $dados = $responseGet->fetchAll();
+    $productDatas = $responseGet->fetchAll(PDO::FETCH_ASSOC);
+    $productList = [];
 
-    for ($i = 0; $i < count($dados); $i++) {
-        echo $i . ": " . $dados[0]["nome"] . "\n";
-    };
+    foreach ($productDatas as $produto) {
+        $productList[] = new Produto($produto['id'], $produto['nome'], $produto['valor'], $produto['disponivel']);
+    }
 
+    echo var_dump($productList);
 }
 getData($pdo);

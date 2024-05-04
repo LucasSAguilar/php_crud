@@ -2,15 +2,22 @@
 
 class Produto
 {
+    private int $id;
     private string $nome;
     private float $valor;
     private bool $disponivel;
 
-    public function __construct(string $nome, float $valor, bool $disponivel)
+    public function __construct(int $id, string $nome, float $valor, bool $disponivel)
     {
+        $this->id = $id;
         $this->nome = $nome;
         $this->valor = $valor;
         $this->disponivel = $disponivel;
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
     }
 
     public function getNome(): string
