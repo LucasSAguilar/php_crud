@@ -26,7 +26,7 @@ class ProductRepository implements ProductInterface
         }
         return $listaProdutos;
     }
-    function getById(int $id): Produto | string
+    function getById(int $id): Produto|string
     {
         $statement = $this->pdo->prepare("SELECT * FROM produtos WHERE id = ?");
         $statement->bindValue(1, $id, PDO::PARAM_INT);
@@ -40,12 +40,16 @@ class ProductRepository implements ProductInterface
     }
     function insertNew(Produto $newProduct): bool
     {
-        $statement = $this->pdo->prepare("INSERT INTO produtos (id, nome, valor, disponivel) VALUES (?, ?, ?, ?)");
-        $statement->bindValue(1, $newProduct->getId(), PDO::PARAM_INT);
-        $statement->bindValue(2, $newProduct->getNome(), PDO::PARAM_STR);
-        $statement->bindValue(3, $newProduct->getValor(), PDO::PARAM_INT);
-        $statement->bindValue(4, $newProduct->getDisponivel(), PDO::PARAM_BOOL);
-        return $statement->execute();
+        try {
+            $statement = $this->pdo->prepare("INSERT INTO produto (id, nome, valor, disponivel) VALUES (?, ?, ?, ?)");
+            $statement->bindValue(1, $newProduct->getId(), PDO::PARAM_INT);
+            $statement->bindValue(2, $newProduct->getNome(), PDO::PARAM_STR);
+            $statement->bindValue(3, $newProduct->getValor(), PDO::PARAM_INT);
+            $statement->bindValue(4, $newProduct->getDisponivel(), PDO::PARAM_BOOL);
+            return $statement->execute();
+        } catch (PDOException $e) {
+            throw new PDOException("Não foi possível enviar os dados: " . $e->getMessage());
+        }
     }
 
 
