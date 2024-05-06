@@ -41,7 +41,7 @@ class ProductRepository implements ProductInterface
     function insertNew(Produto $newProduct): bool
     {
         try {
-            $statement = $this->pdo->prepare("INSERT INTO produto (id, nome, valor, disponivel) VALUES (?, ?, ?, ?)");
+            $statement = $this->pdo->prepare("INSERT INTO produtos (id, nome, valor, disponivel) VALUES (?, ?, ?, ?)");
             $statement->bindValue(1, $newProduct->getId(), PDO::PARAM_INT);
             $statement->bindValue(2, $newProduct->getNome(), PDO::PARAM_STR);
             $statement->bindValue(3, $newProduct->getValor(), PDO::PARAM_INT);
